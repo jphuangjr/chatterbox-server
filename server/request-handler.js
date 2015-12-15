@@ -18,11 +18,12 @@ var defaultCorsHeaders = {
     "access-control-max-age": 10 // Seconds.
 };
 var fs = require("fs");
+var db = require('./database')
 var requestHandler = function(request, response) {
     var statusCode;
     var headers = defaultCorsHeaders;
     headers['Content-Type'] = "application/JSON";
-    requestHandler.database = requestHandler.database || {results: []};
+    requestHandler.database = requestHandler.database || db
 
 
 
@@ -38,6 +39,14 @@ var requestHandler = function(request, response) {
               decodedResults = JSON.parse(decodedResults);
               requestHandler.database.results.push(decodedResults);
           });
+          //Save to local copy
+          fs.writeFile('database.js', "module.exports=" +JSON.stringify(requestHandler.database), function(err){
+            if (err){
+              console.log("Write Copy: " + err);
+            } else {
+              console.log("Write Copy Success");
+            }
+          })
 
           response.writeHead(statusCode, headers);
           response.end(JSON.stringify(requestHandler.database));
