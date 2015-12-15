@@ -40,6 +40,7 @@ var requestHandler = function(request, response) {
               requestHandler.database.results.push(decodedResults);
           });
           //Save to local copy
+
           fs.writeFile('database.js', "module.exports=" +JSON.stringify(requestHandler.database), function(err){
             if (err){
               console.log("Write Copy: " + err);
@@ -47,7 +48,6 @@ var requestHandler = function(request, response) {
               console.log("Write Copy Success");
             }
           })
-
           response.writeHead(statusCode, headers);
           response.end(JSON.stringify(requestHandler.database));
 
