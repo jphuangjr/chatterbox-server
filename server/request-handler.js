@@ -11,17 +11,22 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+var defaultCorsHeaders = {
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "access-control-allow-headers": "content-type, accept",
+    "access-control-max-age": 10 // Seconds.
+};
+
 var requestHandler = function(request, response) {
-    // The outgoing status.
     var statusCode;
     var headers = defaultCorsHeaders;
-    headers['Content-Type'] = "text/JSON";
+    headers['Content-Type'] = "application/JSON";
     requestHandler.database = requestHandler.database || {results: []};
 
 
-  console.log("Serving request type " + request.method + " for url " + request.url);
+  //console.log("Serving request type " + request.method + " for url " + request.url);
 
-  if(request.url === "/classes/messages"){
       if(request.method === "POST"){
           statusCode = 201;
           var decodedResults = '';
@@ -29,37 +34,26 @@ var requestHandler = function(request, response) {
               decodedResults += stuff.toString();
           });
           request.on("end", function(){
-              console.log("before: ", decodedResults)
               decodedResults = JSON.parse(decodedResults);
               requestHandler.database.results.push(decodedResults);
           });
 
-          //console.log("Posting");
-      } else if(request.method === "GET"){
+          response.writeHead(statusCode, headers);
+          response.end(JSON.stringify(requestHandler.database));
+
+      }  else if(request.method === "GET"){
           statusCode = 200;
+          response.writeHead(statusCode, headers);
+          response.end(JSON.stringify(requestHandler.database));
 
-      }
-  } else if(request.url === "/classes/room1"){
-        if(request.method === "POST"){
-            statusCode = 201;
-            var decodedResults = '';
-            request.on("data", function(stuff){
-                decodedResults += stuff.toString();
-            });
-            request.on("end", function(){
-                console.log("before: ", decodedResults)
-                decodedResults = JSON.parse(decodedResults);
-                requestHandler.database.results.push(decodedResults);
-            });
+      } else if(request.method === "OPTIONS"){
+      statusCode = 200;
+      response.writeHead(statusCode)
+      response.end(JSON.stringify(requestHandler.database));
 
-            //console.log("Posting");
-        } else if(request.method === "GET"){
-            statusCode = 200;
-
-        }
-    } else {
+      } else {
       statusCode = 404;
-  }
+      }
 
 
 
@@ -70,7 +64,7 @@ var requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all header
   //  console.log("statusCode: ",statusCode);
-  response.writeHead(statusCode, headers);
+  //response.writeHead(statusCode, headers);
     //console.log("this is the reponse: ", response._responseCode)
 
 
@@ -82,7 +76,7 @@ var requestHandler = function(request, response) {
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
 
-  response.end(JSON.stringify(requestHandler.database));
+  //response.end(JSON.stringify(requestHandler.database));
 
 };
 
@@ -96,11 +90,6 @@ var requestHandler = function(request, response) {
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "access-control-allow-headers": "content-type, accept",
-  "access-control-max-age": 10 // Seconds.
-};
+
 
 exports.requestHandler = requestHandler;
