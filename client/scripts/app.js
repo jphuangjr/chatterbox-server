@@ -3,7 +3,7 @@ var app = {
 
   //TODO: The current 'addFriend' function just adds the class 'friend'
   //to all messages sent by the user
-  server: 'https://api.parse.com/1/classes/chatterbox/',
+  server: 'http://127.0.0.1:3000/classes/chatterbox/',
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
@@ -62,6 +62,7 @@ var app = {
       data: { order: '-createdAt'},
       success: function(data) {
         // Don't bother if we have nothing to work with
+        data = JSON.parse(data);
         if (!data.results || !data.results.length) { return; }
 
         // Get the last message
@@ -69,7 +70,7 @@ var app = {
         var displayedRoom = $('.chat span').first().data('roomname');
         app.stopSpinner();
         // Only bother updating the DOM if we have a new message
-        if (mostRecentMessage.objectId !== app.lastMessageId || app.roomname !== displayedRoom) {
+        // if (mostRecentMessage.objectId !== app.lastMessageId || app.roomname !== displayedRoom) {
           // Update the UI with the fetched rooms
           app.populateRooms(data.results);
 
@@ -78,7 +79,7 @@ var app = {
 
           // Store the ID of the most recent message
           app.lastMessageId = mostRecentMessage.objectId;
-        }
+        // }
       },
       error: function(data) {
         console.error('chatterbox: Failed to fetch messages');
@@ -226,11 +227,11 @@ var app = {
 
   startSpinner: function(){
     $('.spinner img').show();
-    $('form input[type=submit]').attr('disabled', "true");
+    // $('form input[type=submit]').attr('disabled', "true");
   },
 
   stopSpinner: function(){
     $('.spinner img').fadeOut('fast');
-    $('form input[type=submit]').attr('disabled', null);
+    // $('form input[type=submit]').attr('disabled', null);
   }
 };
