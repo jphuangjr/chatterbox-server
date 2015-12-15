@@ -26,7 +26,7 @@ var requestHandler = function(request, response) {
 
 
 
-  //console.log("Serving request type " + request.method + " for url " + request.url);
+  console.log("Serving request type " + request.method + " for url " + request.url);
 
       if(request.method === "POST"){
           statusCode = 201;
@@ -44,7 +44,7 @@ var requestHandler = function(request, response) {
 
       }  else if(request.method === "GET"){
           statusCode = 200;
-          if(request.url === "/"){
+          if(request.url === "/" || request.url.indexOf("?username") > -1){
               fs.readFile(".././client/index.html", function(errors, contents){
                   headers['Content-Type'] = "text/html"
                   response.writeHead(statusCode, headers);
@@ -65,13 +65,13 @@ var requestHandler = function(request, response) {
                   response.write(contents);
                   response.end();
               })
-          //}else if(request.url === "/env/config.js"){
-          //    fs.readFile(".././client/env/config.js", function(errors, contents){
-          //        headers['Content-Type'] = "application/javascript"
-          //        response.writeHead(statusCode, headers);
-          //        response.write(contents);
-          //        response.end();
-          //    })
+          }else if(request.url === "/env/config.js"){
+             fs.readFile(".././client/env/config.js", function(errors, contents){
+                 headers['Content-Type'] = "application/javascript"
+                 response.writeHead(statusCode, headers);
+                 response.write(contents);
+                 response.end();
+             })
           } else if(request.url === "/scripts/app.js"){
               fs.readFile(".././client/scripts/app.js", function(errors, contents){
                   headers['Content-Type'] = "application/javascript"
